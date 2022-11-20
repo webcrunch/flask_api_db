@@ -6,3 +6,25 @@ services:
       - "7007:7007"
     volumes:
       - .:/code
+
+  database:
+    image: mariadb:10.7
+    networks:
+      - app-tier
+    ports:
+      - 3307:3306
+    volumes:
+      - .:/db
+      #- ./mariadb-data:/var/lib/mysql
+      #- ./initdb/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - MYSQL_ROOT_PASSWORD=S3cret
+      #- MYSQL_PASSWORD=An0thrS3crt
+      - MYSQL_PASSWORD=mauFJcuf5dhRMQrjj
+      - MYSQL_USER=OL_user
+      - MYSQL_DATABASE=main
+      
+networks:
+    app-tier:
+        driver: bridge
+
