@@ -19,7 +19,6 @@ services:
       #- ./initdb/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - MYSQL_ROOT_PASSWORD=S3cret
-      #- MYSQL_PASSWORD=An0thrS3crt
       - MYSQL_PASSWORD=mauFJcuf5dhRMQrjj
       - MYSQL_USER=OL_user
       - MYSQL_DATABASE=main
