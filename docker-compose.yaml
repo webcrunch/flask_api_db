@@ -1,11 +1,18 @@
 version: "3"
 services:
-  web:
-    build: .
-    ports:
-      - "7007:7007"
-    volumes:
-      - .:/code
+  # web:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile 
+  #   ports:
+  #     - "7007:7007"
+  #   volumes:
+  #     - .:/code
+  #   environment:
+  #    - PORT=3307
+  #    - MYSQL_PASSWORD=mauFJcuf5dhRMQrjj
+  #    - MYSQL_USER=OL_user
+  #    - MYSQL_DATABASE=main
 
   database:
     image: mariadb:10.7
