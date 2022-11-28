@@ -1,13 +1,22 @@
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
 import json
-
+import mariadb
+import os
 
 app = Flask(__name__)
 CORS(app)
 resources = {r"/api/*": {"origins": "*"}}
 app.config["CORS_HEADERS"] = "Content-Type"
 app.config['JSON_SORT_KEYS'] = False
+
+
+conn = mariadb.connect(
+    host='localhost',
+    port=3307,
+    user='OL_user',
+    password='mauFJcuf5dhRMQrjj',
+    database='main')
 
 
 @app.route('/')
@@ -19,6 +28,11 @@ def home():
 def show_user(username):
     # Greet the user
     return f'Hello {username} !'
+
+
+@app.route('/test')
+def stina():
+    return jsonify(os.environ['MY_USER'])
 
 
 @app.route('/home')
