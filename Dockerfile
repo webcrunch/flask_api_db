@@ -1,4 +1,4 @@
-FROM python:3.6.9-alpine
+FROM python:3.8-alpine3.15
 WORKDIR /code
 
 RUN apk --update --upgrade add --no-cache  gcc musl-dev jpeg-dev zlib-dev libffi-dev cairo-dev pango-dev gdk-pixbuf-dev
