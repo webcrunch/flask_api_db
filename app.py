@@ -30,6 +30,25 @@ def show_user(username):
     return f'Hello {username} !'
 
 
+@app.route('/api/items')
+def getAllAuktionItems():
+    conn = mariadb.connect(
+        host='localhost',
+        port=3307,
+        user='root',
+        password='S3cret',
+        database='auctionista')
+
+    # create a connection cursor
+    cur = conn.cursor()
+    # execute a SQL statement
+    cur.execute("select id,title,short_text from users")
+    # data =
+    # column_list = []
+    # # for i in data:
+    # #     print(i)
+    return jsonify(cur.fetchall())
+
 @app.route('/test')
 def stina():
     return jsonify(os.environ['MY_USER'])
