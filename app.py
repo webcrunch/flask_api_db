@@ -1,33 +1,68 @@
-from flask import Flask, render_template, request, jsonify
-from flask_cors import CORS
+from flask import Flask, render_template, request, jsonify, session
+# from flask_cors import CORS
 import json
 import mariadb
 import os
 
 app = Flask(__name__)
-CORS(app)
-resources = {r"/api/*": {"origins": "*"}}
+app.config.update(
+    DEBUG=True,
+    SECRET_KEY="secret_sauce",
+    SESSION_COOKIE_HTTPONLY=True,
+    REMEMBER_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Strict",
+)
+
+# CORS(app)
+# resources = {r"/api/*": {"origins": "*"}}
 app.config["CORS_HEADERS"] = "Content-Type"
 app.config['JSON_SORT_KEYS'] = False
 
+# config = {
+#     'host': 'localhost',
+#     'port': 3307,
+#     'user': 'root',
+#     'password': 'S3cret!',
+#     'database': 'main'
+# }
 
-conn = mariadb.connect(
-    host='localhost',
-    port=3307,
-    user='OL_user',
-    password='mauFJcuf5dhRMQrjj',
-    database='main')
+# login
+
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    conn = mariadb.connect(
+        host='localhost',
+        port=3307,
+        user='root',
+        password='S3cret',
+        database='auctionista')
+
+    # create a connection cursor
+    cur = conn.cursor()
+    # execute a SQL statement
+    cur.execute("select * from users WHERE email = ? AND password = ?",
+                (request.json['email'], request.json['password']))
+    user = cur.fetchone()
+    if (user is None):
+        return jsonify({"login": False})
+    else:
+        session['user'] = user
+        return jsonify({"login": True})
+
+
+# get current user
+@app.route("/api/user", methods=["GET"])
+def user_data():
+    if session.get('user'):
+        return jsonify(session['user'])
+
+    return jsonify({"login": False})
 
 
 @app.route('/')
 def home():
     return jsonify({"Message": "This is your flask app with docker"})
-
-
-@app.route('/user/<username>')
-def show_user(username):
-    # Greet the user
-    return f'Hello {username} !'
 
 
 # Items - Auction Objects
