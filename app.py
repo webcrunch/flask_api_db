@@ -78,11 +78,17 @@ def insertUsers():
     # create a connection cursor
     cur = conn.cursor()
     # execute a SQL statement
-    cur.execute(
-        "INSERT INTO users (email,password,username,first_name,last_name) VALUES (?, ?,?,?,?)",
-        (request.json['email'], request.json['password'], request.json['username'], request.json['first_name'], request.json['last_name']))
-    conn.commit()
-    return jsonify({"Message": "ID:" + conn.lastrowid + " was inserted"})
+    cur.execute("select * from users WHERE email = ?",
+                ([request.json['email']]))
+    user = cur.fetchone()
+    if (user is None):
+        cur.execute(
+            "INSERT INTO users (email,password,username,first_name,last_name) VALUES (?, ?,?,?,?)",
+            (request.json['email'], request.json['password'], request.json['username'], request.json['first_name'], request.json['last_name']))
+        conn.commit()
+        return jsonify({"Message": "ID: was inserted"})
+    else:
+        return jsonify({"data": "user already exist with that email"})
 
 
 @app.route('/test')
