@@ -63,6 +63,28 @@ def getSingleItem(item_id):
                 [item_id])
     return jsonify(cur.fetchall())
 
+# Users
+
+
+@app.route('/api/users', methods=['POST'])
+def insertUsers():
+    conn = mariadb.connect(
+        host='localhost',
+        port=3307,
+        user='root',
+        password='S3cret',
+        database='auctionista')
+
+    # create a connection cursor
+    cur = conn.cursor()
+    # execute a SQL statement
+    cur.execute(
+        "INSERT INTO users (email,password,username,first_name,last_name) VALUES (?, ?,?,?,?)",
+        (request.json['email'], request.json['password'], request.json['username'], request.json['first_name'], request.json['last_name']))
+    conn.commit()
+    return jsonify({"Message": "ID:" + conn.lastrowid + " was inserted"})
+
+
 @app.route('/test')
 def stina():
     return jsonify(os.environ['MY_USER'])
