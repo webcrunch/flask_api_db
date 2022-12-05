@@ -1,3 +1,5 @@
 Flask==2.2.2
-Flask-Cors==3.0.9
+# Flask-Cors==3.0.9
 mariadb==1.1.5.post3
+pymysql-1.0.2
+flask-mysql-1.5.2
