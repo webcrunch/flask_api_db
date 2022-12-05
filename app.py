@@ -46,6 +46,21 @@ def getAllAuktionItems():
     cur.execute("select id,title,short_text from users")
     return jsonify(cur.fetchall())
 
+
+@app.route('/api/items/<item_id>', methods=['GET'])
+def getSingleItem(item_id):
+    conn = mariadb.connect(
+        host='localhost',
+        port=3307,
+        user='root',
+        password='S3cret',
+        database='auctionista')
+
+    # create a connection cursor
+    cur = conn.cursor()
+    # execute a SQL statement
+    cur.execute("SELECT * FROM users WHERE id = ?",
+                [item_id])
     return jsonify(cur.fetchall())
 
 @app.route('/test')
