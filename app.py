@@ -162,7 +162,7 @@ def getSingleItem(item_id):
     # create a connection cursor
     cur = conn.cursor(dictionary=True)
     # execute a SQL statement
-    cur.execute("SELECT * FROM items WHERE id = ?",
+    cur.execute("SELECT items.id,title,description,start_time,termination_time,starting_price,category,images.name AS image_name,images.url AS image_url FROM items LEFT JOIN images ON items.id = ?",
                 [item_id])
     itemObject = cur.fetchall()
     cur.execute("SELECT id,amount,time FROM bids WHERE auction_object = ? LIMIT 5",
