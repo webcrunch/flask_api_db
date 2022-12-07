@@ -83,19 +83,30 @@ def insertBids():
         user='root',
         password='S3cret',
         database='auctionista')
-
     # create a connection cursor
     cur = conn.cursor()
+    cur.execute(
+        "SELECT user from items where id = ?", ([request.json['auktion_id']]))
+    userId = cur.fetchone()
+    if userId is None:
+        return jsonify({"data": "there is no item with that id"})
+    else:
+        for id in userId:
+            userId = id
+
+    if userId is session.get('user')[0]:
+        return jsonify({"data": "cant bid on your own auction items"})
     # execute a SQL statement
     cur.execute(
         "SELECT amount FROM bids JOIN items ON bids.auction_object = ? ORDER BY amount DESC LIMIT 1", ([request.json['auktion_id']]))
-    data = cur.fetchall()
+    data = cur.fetchone()
     amount = request.json['amount']
 
     if (len(data) == 0):
         highest_amount = 0
     else:
-        highest_amount = data[0][0]
+        highest_amount = data[0]
+    print(highest_amount)
     if (amount > highest_amount):
         cur.execute(
             "INSERT INTO bids (amount,auction_object,time) VALUES (?,?,?)", (
@@ -105,7 +116,7 @@ def insertBids():
         return jsonify({"data": "new bid placed"})
     else:
         cur.close()
-        return jsonify({"data": "there are higher bids"})
+        return jsonify({"data": "there are higher or equal bids"})
 
 
 @app.route('/api/bids/current', methods=['GET'])
