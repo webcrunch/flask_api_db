@@ -51,6 +51,13 @@ def login():
         session['user'] = user
         return jsonify({"login": True})
 
+# logout
+
+
+@app.route("/api/login", methods=["DELETE"])
+def logout():
+    session['user'] = {}
+    return jsonify({"logout": True})
 
 # get current user
 @app.route("/api/user", methods=["GET"])
