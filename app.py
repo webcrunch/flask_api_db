@@ -60,6 +60,8 @@ def logout():
     return jsonify({"logout": True})
 
 # get current user
+
+
 @app.route("/api/user", methods=["GET"])
 def user_data():
     if session.get('user'):
@@ -119,26 +121,6 @@ def insertBids():
         return jsonify({"data": "there are higher or equal bids"})
 
 
-@app.route('/api/bids/current', methods=['GET'])
-def getCurrentBids():
-    conn = mariadb.connect(
-        host='localhost',
-        port=3307,
-        user='root',
-        password='S3cret',
-        database='auctionista')
-
-    # create a connection cursor
-    cur = conn.cursor()
-    # execute a SQL statement
-    cur.execute("SELECT * FROM items")
-    data = cur.fetchall()
-    cur.close()
-    return jsonify(data)
-
-# Items - Auction Objects
-
-
 @ app.route('/api/items', methods=['GET'])
 def getAllAuktionItems():
     conn = mariadb.connect(
@@ -149,11 +131,23 @@ def getAllAuktionItems():
         database='auctionista')
 
     # create a connection cursor
-    cur = conn.cursor()
+    cur = conn.cursor(dictionary=True)
     # execute a SQL statement
-    cur.execute("select id,title,short_text from users")
+    cur.execute("""SELECT
+                items.title, items.short_text, MAX(amount) AS current_bid
+                FROM bids
+                RIGHT JOIN
+                items
+                ON
+                bids.auction_object=items.id
+                GROUP BY auction_object
+                """)
+
+    items = cur.fetchall()
+    for item in items:
+        print(item)
     cur.close()
-    return jsonify(cur.fetchall())
+    return jsonify(items)
 
 
 @ app.route('/api/items/<item_id>', methods=['GET'])
@@ -166,12 +160,16 @@ def getSingleItem(item_id):
         database='auctionista')
 
     # create a connection cursor
-    cur = conn.cursor()
+    cur = conn.cursor(dictionary=True)
     # execute a SQL statement
-    cur.execute("SELECT * FROM users WHERE id = ?",
+    cur.execute("SELECT * FROM items WHERE id = ?",
                 [item_id])
+    itemObject = cur.fetchall()
+    cur.execute("SELECT id,amount,time FROM bids WHERE auction_object = ? LIMIT 5",
+                [item_id])
+    bidObject = cur.fetchall()
     cur.close()
-    return jsonify(cur.fetchall())
+    return jsonify({"item": itemObject, "bids": bidObject})
 
 
 @ app.route('/api/items', methods=['POST'])
@@ -185,7 +183,7 @@ def insertItems():
         database='auctionista')
 
     # create a connection cursor
-    cur = conn.cursor()
+    cur = conn.cursor(dictionary=True)
     # execute a SQL statement
     cur.execute(
         "INSERT INTO items (title,short_text, description,start_time,termination_time,starting_price,category,user) VALUES (?,?,?,?,?,?,?,?)",
@@ -213,7 +211,7 @@ def insertUsers():
         database='auctionista')
 
     # create a connection cursor
-    cur = conn.cursor()
+    cur = conn.cursor(dictionary=True)
     # execute a SQL statement
     cur.execute("select * from users WHERE email = ?",
                 ([request.json['email']]))
