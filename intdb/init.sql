@@ -1,11 +1,11 @@
 USE auctionista;
 
 CREATE TABLE
-    `ítems`(
+    `items`(
         `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        `title` INT NOT NULL,
+        `title` VARCHAR(255) NOT NULL,
         `short_text` VARCHAR(255) NOT NULL,
-        `description` VARCHAR(255) NOT NULL,
+        `description` VARCHAR(2550) NOT NULL,
         `start_time` DATETIME NOT NULL,
         `termination_time` DATETIME NOT NULL,
         `starting_price` INT NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    `user`(
+    `users`(
         `id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `email` VARCHAR(255) NOT NULL,
         `password` VARCHAR(255) NOT NULL,
@@ -37,9 +37,9 @@ CREATE TABLE
         `time` DATETIME NOT NULL
     );
 
-ALTER TABLE `ítems`
+ALTER TABLE `items`
 ADD
-    CONSTRAINT `ítems_user_foreign` FOREIGN KEY(`user`) REFERENCES `user`(`id`);
+    CONSTRAINT `items_user_foreign` FOREIGN KEY(`user`) REFERENCES `users`(`id`);
 
 ALTER TABLE `images`
 ADD
