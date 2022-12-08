@@ -25,7 +25,7 @@ app.config['JSON_SORT_KEYS'] = False
 @app.route("/api/login", methods=["POST"])
 def login():
     conn = mariadb.connect(
-        host='localhost',
+        host='database',
         port=3307,
         user='root',
         password='S3cret',
@@ -127,7 +127,7 @@ def getAllAuktionItems():
     # execute a SQL statement
     cur.execute("""SELECT items.id,items.user,items.title,items.short_text, MAX(amount) AS current_bid
                     FROM items
-                    LEFT JOIN bids 
+                    LEFT JOIN bids
                     ON bids.auction_object = items.id
                     GROUP BY auction_object;
                 """)
@@ -209,6 +209,7 @@ def getSingleItem(item_id):
     cur.execute("SELECT items.id,title,description,start_time,termination_time,starting_price FROM items WHERE items.id = ?",
                 [item_id])
     itemObject = cur.fetchall()
+    print(itemObject)
     cur.execute("SELECT * FROM images WHERE images.auction_object = ?",
                 [item_id])
     imageObject = cur.fetchone()
@@ -217,7 +218,7 @@ def getSingleItem(item_id):
     bidObject = cur.fetchall()
     print(type(itemObject))
     cur.close()
-    if (imageObject is None):
+    if (len(itemObject) < 1):
         return jsonify({"status": "no items with that identification"})
     return jsonify({"item": itemObject, "images": imageObject,  "bids": bidObject})
 
