@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, jsonify, session
 # from flask_cors import CORS
-import json
 import mariadb
 import os
 import datetime
@@ -19,13 +18,6 @@ app.config.update(
 app.config["CORS_HEADERS"] = "Content-Type"
 app.config['JSON_SORT_KEYS'] = False
 
-# config = {
-#     'host': 'localhost',
-#     'port': 3307,
-#     'user': 'root',
-#     'password': 'S3cret!',
-#     'database': 'main'
-# }
 
 # login
 
@@ -133,15 +125,67 @@ def getAllAuktionItems():
     # create a connection cursor
     cur = conn.cursor(dictionary=True)
     # execute a SQL statement
+    cur.execute("""SELECT items.id,items.user,items.title,items.short_text, MAX(amount) AS current_bid
+                    FROM items
+                    LEFT JOIN bids 
+                    ON bids.auction_object = items.id
+                    GROUP BY auction_object;
+                """)
+
+    items = cur.fetchall()
+    cur.close()
+    return jsonify(items)
+
+
+@app.route('/api/items/own')
+def getOwnItems():
+
+    conn = mariadb.connect(
+        host='localhost',
+        port=3307,
+        user='root',
+        password='S3cret',
+        database='auctionista')
+
+    print(session.get('user')[0])
+    # create a connection cursor
+    cur = conn.cursor(dictionary=True)
+    # execute a SQL statement
     cur.execute("""SELECT
-                items.title, items.short_text, MAX(amount) AS current_bid
+                items.id,items.title,items.user, items.short_text
+                FROM items
+                WHERE items.user = ?
+                """, ([session.get('user')[0]]))
+
+    items = cur.fetchall()
+    for item in items:
+        print(item)
+    cur.close()
+    return jsonify(items)
+
+
+@ app.route('/api/items/category/<category>', methods=['GET'])
+def getAllAuktionItemsFromCategory(category):
+    conn = mariadb.connect(
+        host='localhost',
+        port=3307,
+        user='root',
+        password='S3cret',
+        database='auctionista')
+
+    # create a connection cursor
+    cur = conn.cursor(dictionary=True)
+    # execute a SQL statement
+    cur.execute("""SELECT
+                items.title, items.category, items.short_text, MAX(amount) AS current_bid
                 FROM bids
                 RIGHT JOIN
                 items
                 ON
                 bids.auction_object=items.id
-                GROUP BY auction_object
-                """)
+                WHERE items.category=?
+                GROUP BY auction_object;
+                """, ([category]))
 
     items = cur.fetchall()
     for item in items:
@@ -162,14 +206,20 @@ def getSingleItem(item_id):
     # create a connection cursor
     cur = conn.cursor(dictionary=True)
     # execute a SQL statement
-    cur.execute("SELECT items.id,title,description,start_time,termination_time,starting_price,category,images.name AS image_name,images.url AS image_url FROM items LEFT JOIN images ON items.id = ?",
+    cur.execute("SELECT items.id,title,description,start_time,termination_time,starting_price FROM items WHERE items.id = ?",
                 [item_id])
     itemObject = cur.fetchall()
+    cur.execute("SELECT * FROM images WHERE images.auction_object = ?",
+                [item_id])
+    imageObject = cur.fetchone()
     cur.execute("SELECT id,amount,time FROM bids WHERE auction_object = ? LIMIT 5",
                 [item_id])
     bidObject = cur.fetchall()
+    print(type(itemObject))
     cur.close()
-    return jsonify({"item": itemObject, "bids": bidObject})
+    if (imageObject is None):
+        return jsonify({"status": "no items with that identification"})
+    return jsonify({"item": itemObject, "images": imageObject,  "bids": bidObject})
 
 
 @ app.route('/api/items', methods=['POST'])
@@ -199,9 +249,10 @@ def insertItems():
     cur.close()
     return jsonify({"Message": "ID: was inserted"})
 
-
 # Users
-@ app.route('/api/users', methods=['POST'])
+
+
+@app.route('/api/users', methods=['POST'])
 def insertUsers():
     conn = mariadb.connect(
         host='localhost',
