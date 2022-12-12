@@ -1,429 +1,467 @@
 {
-  "openapi": "3.0.0",
-  "info": {
-    "description": "Code With Prince",
-    "version": "1.0.0",
-    "title": "Code With Prince Flask API Tutorial",
-    "license": {
-      "name": "MIT",
-      "url": "https://opensource.org/licenses/MIT"
-    }
-  },
-   "servers": [
-        {
-        "url": "/api"
-        }
-    ],
-       "components": {
-        "schemas": {
-            "Users":{
-                "type":"object",
-                "properties":{
-                    "email":{"type":"string"},
-                    "password":{"type":"string"},
-                    "username":{"type":"string"},
-                    "first_name":{"type":"string"},
-                    "last_name":{"type":"string"}
-                }
-            },
-            "Items":{
-                "type": "object",
-                "properties":{
-                    "title":{"type":"string"},
-                    "short_text": {"type":"string"},
-                    "description":{"type":"string"},
-                    "start_time": {"type":"string","description":"format like this for example(YYYY-MM-DD HH:MM:SS) 2022-12-15 9:55:12"},
-                    "termination_time" : {"type":"string","description":"format like this for example(YYYY-MM-DD HH:MM:SS) 2022-12-15 9:55:12"},
-                    "starting_price" : {"type":"integer"},
-                    "category": {"type":"string"},
-                    "user": {"type":"integer", "description": "idetification number to the user"}
-                }
-            },
-            "Bids":{
-                "type": "object",
-                "properties":{
-                    "amount":{"type":"integer"},
-                    "auction_id": {"type":"integer"}
-                }
-            },
-            "Login":{
-                "type":"object",
-                "properties":{
-                    "email":{"type":"string"},
-                    "password":{"type":"string"}
-                }
-            },
-            "TodoList": {
-                "type": "object",
-                "properties": {
-                    "name": {
-                    "type": "string"
-                    },
-                    "description": {
-                    "type": "string"
-                    }
-                }
-            },
-            "Cat":{
-            "type" : "string",
-            "properties" : {
-                "name" : {
-                    "type" : "string"
-                }
+   "openapi":"3.0.0",
+   "info":{
+      "description":"Code With Prince",
+      "version":"1.0.0",
+      "title":"Code With Prince Flask API Tutorial",
+      "license":{
+         "name":"MIT",
+         "url":"https://opensource.org/licenses/MIT"
+      }
+   },
+   "servers":[
+      {
+         "url":"/api"
+      }
+   ],
+   "components":{
+      "schemas":{
+         "Users":{
+            "type":"object",
+            "properties":{
+               "email":{
+                  "type":"string"
+               },
+               "password":{
+                  "type":"string"
+               },
+               "username":{
+                  "type":"string"
+               },
+               "first_name":{
+                  "type":"string"
+               },
+               "last_name":{
+                  "type":"string"
+               }
             }
-        },
-            "Id":{
-            "type" : "integer",
-            "properties" : {
-                "name" : {
-                    "type" : "integer"
-                }
+         },
+         "Items":{
+            "type":"object",
+            "properties":{
+               "title":{
+                  "type":"string"
+               },
+               "short_text":{
+                  "type":"string"
+               },
+               "description":{
+                  "type":"string"
+               },
+               "start_time":{
+                  "type":"string",
+                  "description":"format like this for example(YYYY-MM-DD HH:MM:SS) 2022-12-15 9:55:12"
+               },
+               "termination_time":{
+                  "type":"string",
+                  "description":"format like this for example(YYYY-MM-DD HH:MM:SS) 2022-12-15 9:55:12"
+               },
+               "starting_price":{
+                  "type":"integer"
+               },
+               "category":{
+                  "type":"string"
+               },
+               "user":{
+                  "type":"integer",
+                  "description":"idetification number to the user"
+               }
             }
-        },
-        }
-    },
-     "paths": {
-        "/login":{
-            "post":{
-                "tags":[
-                    "Login"
-                ],
-                "summary": "Login ",
-                "requestBody": {
-                "description": "Post an user object to login",
-                "required": true,
-                "content": {
-                "application/json": {
-                "schema": {
-                    "$ref": "#/components/schemas/Login"
-                    }
-                }
+         },
+         "Bids":{
+            "type":"object",
+            "properties":{
+               "amount":{
+                  "type":"integer"
+               },
+               "auction_id":{
+                  "type":"integer"
+               }
             }
-            },
-             "responses": {
-                "200": {
-                    "description": "OK",
-                    "schema": {
-                    "$ref": "#/components/schemas/TodoList"
-                    }
-                }
+         },
+         "Login":{
+            "type":"object",
+            "properties":{
+               "email":{
+                  "type":"string"
+               },
+               "password":{
+                  "type":"string"
+               }
             }
-            },
-             "delete":{
-                "tags": [
-                "Login"
-            ],
-            "parameters": [{
-                "description": "Logout ",
-                "schema" : {
-                    "$ref": "#/components/schemas/Login"
-                }
-            }],
-            "summary": "Delete user object"
+         },
+         "TodoList":{
+            "type":"object",
+            "properties":{
+               "name":{
+                  "type":"string"
+               },
+               "description":{
+                  "type":"string"
+               }
             }
-        },
-        "/user":{
-            "get":{
-            "tags": [
-                    "Users"
-                ],
-                "summary": "Get All items (auction objects)",
-               
-                "responses": {
-                "200": {
-                    "description": "OK",
-                    "schema": {
-                    "$ref": "#/components/schemas/Items"
-                    }
-                },
-
-        }
-        }
-    },
-    "/users":{
-        "post":{
+         },
+         "Cat":{
+            "type":"string",
+            "properties":{
+               "name":{
+                  "type":"string"
+               }
+            }
+         },
+         "Id":{
+            "type":"integer",
+            "properties":{
+               "name":{
+                  "type":"integer"
+               }
+            }
+         }
+      }
+   },
+   "paths":{
+      "/login":{
+         "post":{
             "tags":[
-                "Users"
+               "Login"
+            ],
+            "summary":"Login ",
+            "requestBody":{
+               "description":"Post an user object to login",
+               "required":true,
+               "content":{
+                  "application/json":{
+                     "schema":{
+                        "$ref":"#/components/schemas/Login"
+                     }
+                  }
+               }
+            },
+            "responses":{
+               "200":{
+                  "description":"OK",
+                  "schema":{
+                     "$ref":"#/components/schemas/TodoList"
+                  }
+               }
+            }
+         },
+         "delete":{
+            "tags":[
+               "Login"
+            ],
+            "parameters":[
+               {
+                  "description":"Logout ",
+                  "schema":{
+                     "$ref":"#/components/schemas/Login"
+                  }
+               }
+            ],
+            "summary":"Delete user object"
+         }
+      },
+      "/user":{
+         "get":{
+            "tags":[
+               "Users"
+            ],
+            "summary":"Get All items (auction objects)",
+            "responses":{
+               "200":{
+                  "description":"OK",
+                  "schema":{
+                     "$ref":"#/components/schemas/Items"
+                  }
+               }
+            }
+         }
+      },
+      "/users":{
+         "post":{
+            "tags":[
+               "Users"
             ],
             "summary":"Add Users",
-            "requestBody": {
-            "description": "Post New Users To Database",
-            "required": true,
-            "content": {
-                "application/json": {
-                "schema": {
-                    "$ref": "#/components/schemas/Users"
-                    }
-                }
+            "requestBody":{
+               "description":"Post New Users To Database",
+               "required":true,
+               "content":{
+                  "application/json":{
+                     "schema":{
+                        "$ref":"#/components/schemas/Users"
+                     }
+                  }
+               }
             }
-            },
-        }
-    },
-    "/items":{
-        "post":{
+         }
+      },
+      "/items":{
+         "post":{
             "tags":[
-                "Items"
+               "Items"
             ],
             "summary":"Add Items(auction objects)",
-            "requestBody": {
-            "description": "Post New Items To Database",
-            "required": true,
-            "content": {
-                "application/json": {
-                "schema": {
-                    "$ref": "#/components/schemas/Items"
-                    }
-                }
-            }
-            }
-        },
-        "get" :{
-                "tags": [
-                    "Items"
-                ],
-                "summary": "Get All Items",
-               
-                "responses": {
-                "200": {
-                    "description": "OK",
-                    "schema": {
-                    "$ref": "#/components/schemas/Items"
-                    }
-                }
-        }
-    }
-},
-        "/items/{id}":{
-            "get" :{
-                "tags": [
-                    "Items"
-                ],
-                "summary": "Get item with id",
-                "parameters": [{
-                  "name": "id",
-                  "in": "path",
-                  "description": "Get the item with the id",
-                  "required": true,
-                  "type": "integer",
-                  "schema" : {
-                      "$ref": "#/components/schemas/Id"
+            "requestBody":{
+               "description":"Post New Items To Database",
+               "required":true,
+               "content":{
+                  "application/json":{
+                     "schema":{
+                        "$ref":"#/components/schemas/Items"
+                     }
                   }
-                }],
-               
-                "responses": {
-                "200": {
-                    "description": "OK",
-                    "schema": {
-                    "$ref": "#/components/schemas/Items"
-                    }
-                },
-                "404": {
-                    "description": "NOT FOUND",
-                    "schema": {
-                    "$ref": "#/components/schemas/Items"
-                    }
+               }
             }
-            }
-            },
-        },
-        "/items/own":{
-            "get":{
-                "tags":[
-                    "Items"
-                ],
-                     "summary": "Get All Items for the person that is logged in",
-               
-                "responses": {
-                "200": {
-                    "description": "OK",
-                    "schema": {
-                    "$ref": "#/components/schemas/Items"
-                    }
-                }
-        }
-            }
-        },
-        "/items/category/{category}":{
-  "get" :{
-                "tags": [
-                    "Items"
-                ],
-                "summary": "Get item with category",
-                "parameters": [{
-                  "name": "category",
-                  "in": "path",
-                  "description": "Get the item with the category",
-                  "required": true,
-                  "type": "string",
-                  "schema" : {
-                      "$ref": "#/components/schemas/Cat"
+         },
+         "get":{
+            "tags":[
+               "Items"
+            ],
+            "summary":"Get All Items",
+            "responses":{
+               "200":{
+                  "description":"OK",
+                  "schema":{
+                     "$ref":"#/components/schemas/Items"
                   }
-                }],
-               
-                "responses": {
-                "200": {
-                    "description": "OK",
-                    "schema": {
-                    "$ref": "#/components/schemas/Items"
-                    }
-                }
+               }
             }
-            }
-        },
-        "/todolist": {
-            "post": {
-            "tags": [
-                "Add todo to API"
+         }
+      },
+      "/items/{id}":{
+         "get":{
+            "tags":[
+               "Items"
             ],
-            "summary": "Add todo",
-            "requestBody": {
-            "description": "Post New todo To Database",
-            "required": true,
-            "content": {
-                "application/json": {
-                "schema": {
-                    "$ref": "#/components/schemas/TodoList"
-                    }
-                }
-            }
-            },
-            "responses": {
-                "200": {
-                    "description": "OK",
-                    "schema": {
-                    "$ref": "#/components/schemas/TodoList"
-                    }
-                }
-            }
-            },
-            "get" :{
-                "tags": [
-                    "Get All todos from API"
-                ],
-                "summary": "Get All todos",
-               
-                "responses": {
-                "200": {
-                    "description": "OK",
-                    "schema": {
-                    "$ref": "#/components/schemas/TodoList"
-                    }
-                },
-                "404": {
-                    "description": "NOT FOUND",
-                    "schema": {
-                    "$ref": "#/components/schemas/TodoList"
-                    }
-            }
-            }
-            }
-        },
-        "/todolist/{id}":{
-
-            "get" :{
-                "tags": [
-                    "Get todos from API"
-                ],
-                "summary": "Get todos",
-                "parameters": [{
-                  "name": "id",
-                  "in": "path",
-                  "description": "todo id to update",
-                  "required": true,
-                  "type": "integer",
-                  "schema" : {
-                      "$ref": "#/components/schemas/Id"
+            "summary":"Get item with id",
+            "parameters":[
+               {
+                  "name":"id",
+                  "in":"path",
+                  "description":"Get the item with the id",
+                  "required":true,
+                  "type":"integer",
+                  "schema":{
+                     "$ref":"#/components/schemas/Id"
                   }
-                }],
-               
-                "responses": {
-                "200": {
-                    "description": "OK",
-                    "schema": {
-                    "$ref": "#/components/schemas/TodoList"
-                    }
-                },
-                "404": {
-                    "description": "NOT FOUND",
-                    "schema": {
-                    "$ref": "#/components/schemas/TodoList"
-                    }
-            }
-            }
-            },
-           
-            "put": {
-            "tags": [
-                "Update todos on API"
+               }
             ],
-            "parameters": [{
-                "name": "id",
-                "in": "path",
-                "description": "todo id to update",
-                "required": true,
-                "type": "integer",
-                "schema" : {
-                    "$ref": "#/components/schemas/Id"
-                }
-            }],
-            "summary": "Update Todo",
-            "requestBody": {
-            "description": "Update Existing todo On Database",
-            "required": true,
-            "content": {
-                "application/json": {
-                    "schema": {
-                        "$ref": "#/components/schemas/update"
-                    }
-                }
+            "responses":{
+               "200":{
+                  "description":"OK",
+                  "schema":{
+                     "$ref":"#/components/schemas/Items"
+                  }
+               },
+               "404":{
+                  "description":"NOT FOUND",
+                  "schema":{
+                     "$ref":"#/components/schemas/Items"
+                  }
+               }
             }
-            },
-            "responses": {
-                "200": {
-                    "description": "OK",
-                    "schema": {
-                    "$ref": "#/components/schemas/TodoList"
-                    }
-                },
-                "404": {
-                    "description": "NOT FOUND",
-                    "schema": {
-                    "$ref": "#/components/schemas/TodoList"
-                    }
-            }
-            }
-        },
-        "delete": {
-            "tags": [
-                "Delete todo to API"
+         }
+      },
+      "/items/own":{
+         "get":{
+            "tags":[
+               "Items"
             ],
-            "parameters": [{
-                "name": "id",
-                "in": "path",
-                "description": "product id to delete",
-                "required": true,
-                "type": "integer",
-                "schema" : {
-                    "$ref": "#/components/schemas/Id"
-                }
-            }],
-            "summary": "Delete todo",
-            
-            "responses": {
-                "200": {
-                    "description": "OK",
-                    "schema": {
-                    "$ref": "#/components/schemas/TodoList"
-                    }
-                },
-                "404": {
-                    "description": "NOT FOUND",
-                    "schema": {
-                    "$ref": "#/components/schemas/TodoList"
-                    }
+            "summary":"Get All Items for the person that is logged in",
+            "responses":{
+               "200":{
+                  "description":"OK",
+                  "schema":{
+                     "$ref":"#/components/schemas/Items"
+                  }
+               }
             }
+         }
+      },
+      "/items/category/{category}":{
+         "get":{
+            "tags":[
+               "Items"
+            ],
+            "summary":"Get item with category",
+            "parameters":[
+               {
+                  "name":"category",
+                  "in":"path",
+                  "description":"Get the item with the category",
+                  "required":true,
+                  "type":"string",
+                  "schema":{
+                     "$ref":"#/components/schemas/Cat"
+                  }
+               }
+            ],
+            "responses":{
+               "200":{
+                  "description":"OK",
+                  "schema":{
+                     "$ref":"#/components/schemas/Items"
+                  }
+               }
             }
-        }
-        }
-}
+         }
+      },
+      "/todolist":{
+         "post":{
+            "tags":[
+               "Add todo to API"
+            ],
+            "summary":"Add todo",
+            "requestBody":{
+               "description":"Post New todo To Database",
+               "required":true,
+               "content":{
+                  "application/json":{
+                     "schema":{
+                        "$ref":"#/components/schemas/TodoList"
+                     }
+                  }
+               }
+            },
+            "responses":{
+               "200":{
+                  "description":"OK",
+                  "schema":{
+                     "$ref":"#/components/schemas/TodoList"
+                  }
+               }
+            }
+         },
+         "get":{
+            "tags":[
+               "Get All todos from API"
+            ],
+            "summary":"Get All todos",
+            "responses":{
+               "200":{
+                  "description":"OK",
+                  "schema":{
+                     "$ref":"#/components/schemas/TodoList"
+                  }
+               },
+               "404":{
+                  "description":"NOT FOUND",
+                  "schema":{
+                     "$ref":"#/components/schemas/TodoList"
+                  }
+               }
+            }
+         }
+      },
+      "/todolist/{id}":{
+         "get":{
+            "tags":[
+               "Get todos from API"
+            ],
+            "summary":"Get todos",
+            "parameters":[
+               {
+                  "name":"id",
+                  "in":"path",
+                  "description":"todo id to update",
+                  "required":true,
+                  "type":"integer",
+                  "schema":{
+                     "$ref":"#/components/schemas/Id"
+                  }
+               }
+            ],
+            "responses":{
+               "200":{
+                  "description":"OK",
+                  "schema":{
+                     "$ref":"#/components/schemas/TodoList"
+                  }
+               },
+               "404":{
+                  "description":"NOT FOUND",
+                  "schema":{
+                     "$ref":"#/components/schemas/TodoList"
+                  }
+               }
+            }
+         },
+         "put":{
+            "tags":[
+               "Update todos on API"
+            ],
+            "parameters":[
+               {
+                  "name":"id",
+                  "in":"path",
+                  "description":"todo id to update",
+                  "required":true,
+                  "type":"integer",
+                  "schema":{
+                     "$ref":"#/components/schemas/Id"
+                  }
+               }
+            ],
+            "summary":"Update Todo",
+            "requestBody":{
+               "description":"Update Existing todo On Database",
+               "required":true,
+               "content":{
+                  "application/json":{
+                     "schema":{
+                        "$ref":"#/components/schemas/update"
+                     }
+                  }
+               }
+            },
+            "responses":{
+               "200":{
+                  "description":"OK",
+                  "schema":{
+                     "$ref":"#/components/schemas/TodoList"
+                  }
+               },
+               "404":{
+                  "description":"NOT FOUND",
+                  "schema":{
+                     "$ref":"#/components/schemas/TodoList"
+                  }
+               }
+            }
+         },
+         "delete":{
+            "tags":[
+               "Delete todo to API"
+            ],
+            "parameters":[
+               {
+                  "name":"id",
+                  "in":"path",
+                  "description":"product id to delete",
+                  "required":true,
+                  "type":"integer",
+                  "schema":{
+                     "$ref":"#/components/schemas/Id"
+                  }
+               }
+            ],
+            "summary":"Delete todo",
+            "responses":{
+               "200":{
+                  "description":"OK",
+                  "schema":{
+                     "$ref":"#/components/schemas/TodoList"
+                  }
+               },
+               "404":{
+                  "description":"NOT FOUND",
+                  "schema":{
+                     "$ref":"#/components/schemas/TodoList"
+                  }
+               }
+            }
+         }
+      }
+   }
 }
