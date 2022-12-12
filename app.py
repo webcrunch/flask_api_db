@@ -1,10 +1,14 @@
+
 from flask import Flask, render_template, request, jsonify, session
 # from flask_cors import CORS
+from flask_swagger_ui import get_swaggerui_blueprint
+
 import mariadb
 import os
 import datetime
 
 app = Flask(__name__)
+
 app.config.update(
     DEBUG=True,
     SECRET_KEY="secret_sauce",
@@ -17,6 +21,19 @@ app.config.update(
 # resources = {r"/api/*": {"origins": "*"}}
 app.config["CORS_HEADERS"] = "Content-Type"
 app.config['JSON_SORT_KEYS'] = False
+
+# flask swagger configs
+SWAGGER_URL = '/api/docs'  # URL for exposing Swagger UI (without trailing '/')
+
+API_URL = '/static/swagger.json'
+SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Auctionista "
+    }
+)
+app.register_blueprint(SWAGGERUI_BLUEPRINT)
 
 
 # if os.environ['FLASK_PORT'] is None:
@@ -49,6 +66,7 @@ def login():
         session['user'] = user
         return jsonify({"login": True})
 
+
 # logout
 
 
@@ -56,6 +74,7 @@ def login():
 def logout():
     session['user'] = {}
     return jsonify({"logout": True})
+
 
 # get current user
 
@@ -75,10 +94,10 @@ def home():
 
 # Bids
 @app.route('/api/bids', methods=['POST'])
-def insertBids():
-     if session.get('user') is None:
-         return jsonify({"error": "Need to be logged in to see this"})
-     else:
+def insert_bids():
+    if session.get('user') is None:
+        return jsonify({"error": "Need to be logged in to see this"})
+    else:
         # get the highest bid amount
         conn = mariadb.connect(
             host='localhost',
@@ -89,31 +108,33 @@ def insertBids():
         # create a connection cursor
         cur = conn.cursor()
         cur.execute(
-            "SELECT user from items where id = ?", ([request.json['auktion_id']]))
-        userId = cur.fetchone()
-        if userId is None:
+            "SELECT user from items where id = ?", ([request.json['auction_id']]))
+        user_id = cur.fetchone()
+        print(user_id)
+        if user_id is None:
             return jsonify({"data": "there is no item with that id"})
         else:
-            for id in userId:
-                userId = id
+            for id in user_id:
+                user_id = id
 
-        if userId is session.get('user')[0]:
+        if user_id is session.get('user')[0]:
             return jsonify({"data": "cant bid on your own auction items"})
         # execute a SQL statement
         cur.execute(
-            "SELECT amount FROM bids JOIN items ON bids.auction_object = ? ORDER BY amount DESC LIMIT 1", ([request.json['auktion_id']]))
+            "SELECT amount FROM bids JOIN items ON bids.auction_object = ? ORDER BY amount DESC LIMIT 1",
+            ([request.json['auktion_id']]))
         data = cur.fetchone()
         amount = request.json['amount']
 
-        if (len(data) == 0):
+        if len(data) == 0:
             highest_amount = 0
         else:
             highest_amount = data[0]
         print(highest_amount)
-        if (amount > highest_amount):
+        if amount > highest_amount:
             cur.execute(
                 "INSERT INTO bids (amount,auction_object,time) VALUES (?,?,?)", (
-                    amount, request.json['auktion_id'], datetime.datetime.now()))
+                    amount, request.json['auction_id'], datetime.datetime.now()))
             conn.commit()
             cur.close()
             return jsonify({"data": "new bid placed"})
@@ -122,16 +143,15 @@ def insertBids():
             return jsonify({"data": "there are higher or equal bids"})
 
 
-@ app.route('/api/items', methods=['GET'])
-def getAllAuktionItems():
-#   flask_port = int(os.environ['PORT'])
-#     flask_host = str(os.environ['HOST'])
-#     flask_pass = str(os.environ['MYSQL_PASSWORD'])
-#     flask_user = str(os.environ['MYSQL_USER'])
-# flask_db = str(os.environ['MYSQL_DATABASE'])
-#     print(flask_port, flask_host)
-   
-    
+@app.route('/api/items', methods=['GET'])
+def get_all_auction_items():
+    #   flask_port = int(os.environ['PORT'])
+    #     flask_host = str(os.environ['HOST'])
+    #     flask_pass = str(os.environ['MYSQL_PASSWORD'])
+    #     flask_user = str(os.environ['MYSQL_USER'])
+    # flask_db = str(os.environ['MYSQL_DATABASE'])
+    #     print(flask_port, flask_host)
+
     conn = mariadb.connect(
         host='localhost',
         port=3307,
@@ -151,21 +171,23 @@ def getAllAuktionItems():
 
     items = cur.fetchall()
     cur.close()
-    return jsonify(items)
+    res = jsonify(items)
+    res.status_code = 200
+    return res
 
 
 @app.route('/api/items/own', methods=['GET'])
-def getOwnItems():
+def get_own_items():
     # check if someone is logged in first
-     if session.get('user') is None:
-         return jsonify({"error": "Need to be logged in to see this"})
-     else:
+    if session.get('user') is None:
+        return jsonify({"error": "Need to be logged in to see this"})
+    else:
         conn = mariadb.connect(
-        host='localhost',
-        port=3307,
-        user='root',
-        password='S3cret',
-        database='auctionista')
+            host='localhost',
+            port=3307,
+            user='root',
+            password='S3cret',
+            database='auctionista')
 
         print(session.get('user'))
         # create a connection cursor
@@ -183,7 +205,7 @@ def getOwnItems():
         return jsonify(items)
 
 
-@ app.route('/api/items/category/<category>', methods=['GET'])
+@app.route('/api/items/category/<category>', methods=['GET'])
 def getAllAuktionItemsFromCategory(category):
     print(category)
     conn = mariadb.connect(
@@ -206,7 +228,7 @@ def getAllAuktionItemsFromCategory(category):
     return jsonify(items)
 
 
-@ app.route('/api/items/<item_id>', methods=['GET'])
+@app.route('/api/items/<item_id>', methods=['GET'])
 def getSingleItem(item_id):
     conn = mariadb.connect(
         host='localhost',
@@ -218,28 +240,27 @@ def getSingleItem(item_id):
     # create a connection cursor
     cur = conn.cursor(dictionary=True)
     # execute a SQL statement
-    cur.execute("SELECT items.id,title,description,start_time,termination_time,starting_price FROM items WHERE items.id = ?",
-                [item_id])
-    itemObject = cur.fetchall()
-    print(itemObject)
+    cur.execute(
+        "SELECT items.id,title,description,start_time,termination_time,starting_price FROM items WHERE items.id = ?",
+        [item_id])
+    item_object = cur.fetchall()
     cur.execute("SELECT * FROM images WHERE images.auction_object = ?",
                 [item_id])
-    imageObject = cur.fetchone()
+    image_object = cur.fetchone()
     cur.execute("SELECT id,amount,time FROM bids WHERE auction_object = ? LIMIT 5",
                 [item_id])
-    bidObject = cur.fetchall()
-    print(type(itemObject))
+    bid_object = cur.fetchall()
     cur.close()
-    if (len(itemObject) < 1):
+    if len(item_object) < 1:
         return jsonify({"status": "no items with that identification"})
-    return jsonify({"item": itemObject, "images": imageObject,  "bids": bidObject})
+    return jsonify({"item": item_object, "images": image_object, "bids": bid_object})
 
 
-@ app.route('/api/items', methods=['POST'])
+@app.route('/api/items', methods=['POST'])
 def insertItems():
-     if session.get('user') is None:
-         return jsonify({"error": "Need to be logged in to see this"})
-     else:
+    if session.get('user') is None:
+        return jsonify({"error": "Need to be logged in to see this"})
+    else:
         conn = mariadb.connect(
             host='localhost',
             port=3307,
@@ -253,16 +274,17 @@ def insertItems():
         cur.execute(
             "INSERT INTO items (title,short_text, description,start_time,termination_time,starting_price,category,user) VALUES (?,?,?,?,?,?,?,?)",
             (request.json['title'],
-            request.json['short_text'],
-            request.json['description'],
-            request.json["start_time"],
-            request.json["termination_time"],
-            request.json["starting_price"],
-            request.json["category"],
-            request.json["user"]))
+             request.json['short_text'],
+             request.json['description'],
+             request.json["start_time"],
+             request.json["termination_time"],
+             request.json["starting_price"],
+             request.json["category"],
+             request.json["user"]))
         conn.commit()
         cur.close()
         return jsonify({"Message": "ID: was inserted"})
+
 
 # Users
 
@@ -285,7 +307,8 @@ def insertUsers():
     if (user is None):
         cur.execute(
             "INSERT INTO users (email,password,username,first_name,last_name) VALUES (?, ?,?,?,?)",
-            (request.json['email'], request.json['password'], request.json['username'], request.json['first_name'], request.json['last_name']))
+            (request.json['email'], request.json['password'], request.json['username'], request.json['first_name'],
+             request.json['last_name']))
         conn.commit()
         cur.close()
         return jsonify({"Message": "ID: was inserted"})
@@ -293,12 +316,12 @@ def insertUsers():
         return jsonify({"data": "user already exist with that email"})
 
 
-@ app.route('/test')
+@app.route('/test')
 def stina():
     return jsonify(os.environ['MY_USER'])
 
 
-@ app.route('/home')
+@app.route('/home')
 def hello():
     return render_template('index.html', content="Testing")
 
