@@ -117,12 +117,12 @@ def insert_bids():
             for id in user_id:
                 user_id = id
 
-        if user_id is session.get('user')[0]:
+        if user_id is session.get('user')["id"]:
             return jsonify({"data": "cant bid on your own auction items"})
         # execute a SQL statement
         cur.execute(
             "SELECT amount FROM bids JOIN items ON bids.auction_object = ? ORDER BY amount DESC LIMIT 1",
-            ([request.json['auktion_id']]))
+            ([request.json['auction_id']]))
         data = cur.fetchone()
         amount = request.json['amount']
 
