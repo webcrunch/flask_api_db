@@ -64,6 +64,14 @@
                     }
                 }
             },
+            "Cat":{
+            "type" : "string",
+            "properties" : {
+                "name" : {
+                    "type" : "string"
+                }
+            }
+        },
             "Id":{
             "type" : "integer",
             "properties" : {
@@ -206,13 +214,13 @@
                 "200": {
                     "description": "OK",
                     "schema": {
-                    "$ref": "#/components/schemas/TodoList"
+                    "$ref": "#/components/schemas/Items"
                     }
                 },
                 "404": {
                     "description": "NOT FOUND",
                     "schema": {
-                    "$ref": "#/components/schemas/TodoList"
+                    "$ref": "#/components/schemas/Items"
                     }
             }
             }
@@ -233,6 +241,33 @@
                     }
                 }
         }
+            }
+        },
+        "/items/category/{category}":{
+  "get" :{
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get item with category",
+                "parameters": [{
+                  "name": "category",
+                  "in": "path",
+                  "description": "Get the item with the category",
+                  "required": true,
+                  "type": "string",
+                  "schema" : {
+                      "$ref": "#/components/schemas/Cat"
+                  }
+                }],
+               
+                "responses": {
+                "200": {
+                    "description": "OK",
+                    "schema": {
+                    "$ref": "#/components/schemas/Items"
+                    }
+                }
+            }
             }
         },
         "/todolist": {
@@ -258,13 +293,7 @@
                     "schema": {
                     "$ref": "#/components/schemas/TodoList"
                     }
-                },
-                "404": {
-                    "description": "NOT FOUND",
-                    "schema": {
-                    "$ref": "#/components/schemas/TodoList"
-                    }
-            }
+                }
             }
             },
             "get" :{
