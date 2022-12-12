@@ -60,7 +60,7 @@ def login():
     cur.execute("select * from users WHERE email = ? AND password = ?",
                 (request.json['email'], request.json['password']))
     user = cur.fetchone()
-    if (user is None):
+    if user is None:
         return jsonify({"login": False})
     else:
         session['user'] = user
@@ -206,7 +206,7 @@ def get_own_items():
 
 
 @app.route('/api/items/category/<category>', methods=['GET'])
-def getAllAuktionItemsFromCategory(category):
+def get_all_auction_items_from_category(category):
     print(category)
     conn = mariadb.connect(
         host='localhost',
@@ -229,7 +229,7 @@ def getAllAuktionItemsFromCategory(category):
 
 
 @app.route('/api/items/<item_id>', methods=['GET'])
-def getSingleItem(item_id):
+def get_single_item(item_id):
     conn = mariadb.connect(
         host='localhost',
         port=3307,
@@ -257,7 +257,7 @@ def getSingleItem(item_id):
 
 
 @app.route('/api/items', methods=['POST'])
-def insertItems():
+def insert_items():
     if session.get('user') is None:
         return jsonify({"error": "Need to be logged in to see this"})
     else:
@@ -272,7 +272,17 @@ def insertItems():
         cur = conn.cursor(dictionary=True)
         # execute a SQL statement
         cur.execute(
-            "INSERT INTO items (title,short_text, description,start_time,termination_time,starting_price,category,user) VALUES (?,?,?,?,?,?,?,?)",
+            """INSERT INTO items 
+            ( 
+            title,
+            short_text, 
+            description,
+            start_time,
+            termination_time,
+            starting_price,
+            category,
+            user
+            ) VALUES (?,?,?,?,?,?,?,?)""",
             (request.json['title'],
              request.json['short_text'],
              request.json['description'],
@@ -290,7 +300,7 @@ def insertItems():
 
 
 @app.route('/api/users', methods=['POST'])
-def insertUsers():
+def insert_users():
     conn = mariadb.connect(
         host='localhost',
         port=3307,
@@ -304,7 +314,7 @@ def insertUsers():
     cur.execute("select * from users WHERE email = ?",
                 ([request.json['email']]))
     user = cur.fetchone()
-    if (user is None):
+    if user is None:
         cur.execute(
             "INSERT INTO users (email,password,username,first_name,last_name) VALUES (?, ?,?,?,?)",
             (request.json['email'], request.json['password'], request.json['username'], request.json['first_name'],
