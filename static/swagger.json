@@ -17,6 +17,16 @@
        "components": {
         "schemas": {
             "Users":{
+                "type":"object",
+                "properties":{
+                    "email":{"type":"string"},
+                    "password":{"type":"string"},
+                    "username":{"type":"string"},
+                    "first_name":{"type":"string"},
+                    "last_name":{"type":"string"}
+                }
+            },
+            "Items":{
                 "type": "object",
                 "properties":{
                     "title":{"type":"string"},
@@ -37,8 +47,12 @@
                 }
             },
             "Login":{
-                
-            }
+                "type":"object",
+                "properties":{
+                    "email":{"type":"string"},
+                    "password":{"type":"string"}
+                }
+            },
             "TodoList": {
                 "type": "object",
                 "properties": {
@@ -58,23 +72,169 @@
                 }
             }
         },
-            "update":{
-              "type": "object",
-              "properties" :{
-                "name": {
-                    "type": "string"
-                    },
-                  "description": {
-                    "type": "string"
-                  },
-                  "completed": {
-                    "type": "boolean"
-                  }
-              }
-            }
         }
     },
      "paths": {
+        "/login":{
+            "post":{
+                "tags":[
+                    "Login"
+                ],
+                "summary": "Login ",
+                "requestBody": {
+                "description": "Post an user object to login",
+                "required": true,
+                "content": {
+                "application/json": {
+                "schema": {
+                    "$ref": "#/components/schemas/Login"
+                    }
+                }
+            }
+            },
+             "responses": {
+                "200": {
+                    "description": "OK",
+                    "schema": {
+                    "$ref": "#/components/schemas/TodoList"
+                    }
+                }
+            }
+            },
+             "delete":{
+                "tags": [
+                "Login"
+            ],
+            "parameters": [{
+                "description": "Logout ",
+                "schema" : {
+                    "$ref": "#/components/schemas/Login"
+                }
+            }],
+            "summary": "Delete user object"
+            }
+        },
+        "/user":{
+            "get":{
+            "tags": [
+                    "Users"
+                ],
+                "summary": "Get All items (auction objects)",
+               
+                "responses": {
+                "200": {
+                    "description": "OK",
+                    "schema": {
+                    "$ref": "#/components/schemas/Items"
+                    }
+                },
+
+        }
+        }
+    },
+    "/users":{
+        "post":{
+            "tags":[
+                "Users"
+            ],
+            "summary":"Add Users",
+            "requestBody": {
+            "description": "Post New Users To Database",
+            "required": true,
+            "content": {
+                "application/json": {
+                "schema": {
+                    "$ref": "#/components/schemas/Users"
+                    }
+                }
+            }
+            },
+        }
+    },
+    "/items":{
+        "post":{
+            "tags":[
+                "Items"
+            ],
+            "summary":"Add Items(auction objects)",
+            "requestBody": {
+            "description": "Post New Items To Database",
+            "required": true,
+            "content": {
+                "application/json": {
+                "schema": {
+                    "$ref": "#/components/schemas/Items"
+                    }
+                }
+            }
+            }
+        },
+        "get" :{
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get All Items",
+               
+                "responses": {
+                "200": {
+                    "description": "OK",
+                    "schema": {
+                    "$ref": "#/components/schemas/Items"
+                    }
+                }
+        }
+    }
+},
+        "/items/{id}":{
+            "get" :{
+                "tags": [
+                    "Items"
+                ],
+                "summary": "Get item with id",
+                "parameters": [{
+                  "name": "id",
+                  "in": "path",
+                  "description": "Get the item with the id",
+                  "required": true,
+                  "type": "integer",
+                  "schema" : {
+                      "$ref": "#/components/schemas/Id"
+                  }
+                }],
+               
+                "responses": {
+                "200": {
+                    "description": "OK",
+                    "schema": {
+                    "$ref": "#/components/schemas/TodoList"
+                    }
+                },
+                "404": {
+                    "description": "NOT FOUND",
+                    "schema": {
+                    "$ref": "#/components/schemas/TodoList"
+                    }
+            }
+            }
+            },
+        },
+        "/items/own":{
+            "get":{
+                "tags":[
+                    "Items"
+                ],
+                     "summary": "Get All Items for the person that is logged in",
+               
+                "responses": {
+                "200": {
+                    "description": "OK",
+                    "schema": {
+                    "$ref": "#/components/schemas/Items"
+                    }
+                }
+        }
+            }
+        },
         "/todolist": {
             "post": {
             "tags": [
