@@ -35,16 +35,7 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
 )
 app.register_blueprint(SWAGGERUI_BLUEPRINT)
 
-
-# if os.environ['FLASK_PORT'] is None:
-#     flask_port = 7007
-# else:
-#     flask_port = os.environ['FLASK_PORT']
-
-# print(flask_port)
 # login
-
-
 @app.route("/api/login", methods=["POST"])
 def login():
     conn = mariadb.connect(
@@ -55,7 +46,7 @@ def login():
         database='auctionista')
 
     # create a connection cursor
-    cur = conn.cursor()
+    cur = conn.cursor(dictionary=True)
     # execute a SQL statement
     cur.execute("select * from users WHERE email = ? AND password = ?",
                 (request.json['email'], request.json['password']))
@@ -68,8 +59,6 @@ def login():
 
 
 # logout
-
-
 @app.route("/api/login", methods=["DELETE"])
 def logout():
     session['user'] = {}
@@ -106,7 +95,7 @@ def insert_bids():
             password='S3cret',
             database='auctionista')
         # create a connection cursor
-        cur = conn.cursor()
+        cur = conn.cursor(dictionary=True)
         cur.execute(
             "SELECT user from items where id = ?", ([request.json['auction_id']]))
         user_id = cur.fetchone()
