@@ -1,18 +1,23 @@
 version: "3"
 services:
-  # web:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile 
-  #   ports:
-  #     - "7007:7007"
-  #   volumes:
-  #     - .:/code
-  #   environment:
-  #    - PORT=3307
-  #    - MYSQL_PASSWORD=mauFJcuf5dhRMQrjj
-  #    - MYSQL_USER=OL_user
-  #    - MYSQL_DATABASE=main
+
+  #myflaskwebservice:
+  #  build:
+  #    context: .
+  #    dockerfile: Dockerfile
+  #  ports:
+  #    - "7007:7007"
+  #  networks:
+  #   - app-tier
+  #  volumes:
+  #    - ./nodejs:/code
+  #  environment:
+  #   - PORT=3307
+  #   - FLASK_PORT=7007
+  #   - HOST='localhost'
+  #   - MYSQL_PASSWORD='S3cret'
+  #   - MYSQL_USER='root'
+  #   - MYSQL_DATABASE='auctionista'
 
   database:
     image: mariadb:10.7
@@ -21,14 +26,30 @@ services:
     ports:
       - 3307:3306
     volumes:
-      - .:/db
+      - ./mariadb-data:/var/lib/mysql
+      # - .mariadb/db
       #- ./mariadb-data:/var/lib/mysql
       #- ./initdb/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - MYSQL_ROOT_PASSWORD=S3cret
-      - MYSQL_PASSWORD=mauFJcuf5dhRMQrjj
-      - MYSQL_USER=OL_user
-      - MYSQL_DATABASE=main
+      # - MYSQL_PASSWORD=mauFJcuf5dhRMQrjj
+      # - MYSQL_USER=OL_user
+      - MYSQL_DATABASE=auctionista
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      - MYSQL_DATABASE=auctionista
+      - MYSQL_ROOT_PASSWORD=mauFJcuf5dhRMQrjj
+    networks:
+      - app-tier
+    ports:
+      - '3308:3306'
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+      # - .mysql/mysql
+      #- ./initdb/init.sql:/docker-entrypoint-initdb.d/init.sql
       
 networks:
     app-tier:
