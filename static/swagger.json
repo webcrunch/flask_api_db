@@ -16,6 +16,29 @@
     ],
        "components": {
         "schemas": {
+            "Users":{
+                "type": "object",
+                "properties":{
+                    "title":{"type":"string"},
+                    "short_text": {"type":"string"},
+                    "description":{"type":"string"},
+                    "start_time": {"type":"string","description":"format like this for example(YYYY-MM-DD HH:MM:SS) 2022-12-15 9:55:12"},
+                    "termination_time" : {"type":"string","description":"format like this for example(YYYY-MM-DD HH:MM:SS) 2022-12-15 9:55:12"},
+                    "starting_price" : {"type":"integer"},
+                    "category": {"type":"string"},
+                    "user": {"type":"integer", "description": "idetification number to the user"}
+                }
+            },
+            "Bids":{
+                "type": "object",
+                "properties":{
+                    "amount":{"type":"integer"},
+                    "auction_id": {"type":"integer"}
+                }
+            },
+            "Login":{
+                
+            }
             "TodoList": {
                 "type": "object",
                 "properties": {
